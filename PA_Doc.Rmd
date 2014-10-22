@@ -1,0 +1,60 @@
+---
+title: Developing Data Products - Peer Assessment
+author: Jorge Fabre
+date: "October - 2014"
+output: html_document
+---
+
+**Documentation**
+
+This presentation is part of the peer assessment of the Developing Data Products.
+The Shiny code is available in Github.
+
+This application show the forecast of growth population in the six more populous
+State in Brazil. The initial data came from the National Institute of Brazil (IBGE - 2014).
+- Sao Paulo (**SP**) = 44.0M
+- Minas Gerais (**MG**) = 20.7MM
+- Rio de Janeiro (**RJ**) = 16.4MM
+- Bahia (**BH**) = 15.1 MM
+- Rio Grande do Sul (**RS**) = 11.2MM
+- Parana (**PR**) = 11.8 MM
+
+From 2014 population data of Brazil, the application create a forecast data to the 
+target year with the growth rate, grouped by State.
+
+**Input Parameters:**
+- Years - Forecast (**2015 - 2050**).
+- Rate - Annual Growth % (**0 - 10**).
+
+**Output:**
+- Plot the population growth in the years by State.
+
+
+Example
+Result for **Years = 2030** and **Rate = 4.5%**.
+
+```{r, echo=FALSE, fig.height=8, fig.width=15}
+
+library(ggplot2)
+year <- c(2014:2030)
+rate <- 1 + 4.5/100
+state <- as.character(c("São Paulo","Minas Gerais","Rio de Janeiro","Bahia","Rio Grande do Sul","Parana"))
+population <- as.numeric(c(44,20.7,16.4,15.1,11.2,11.8))
+my_result <- NULL
+                
+for (x in 1:length(state)) {
+        my_pop <- NULL
+        my_pop <- population[x]
+        for (i in 1:(year[length(year)]-2014)) {
+                my_pop[i+1] <- my_pop[i] * rate
+        }
+        my_pop <- data.frame(state[x],year,my_pop)
+        my_result <- rbind(my_result,my_pop)
+}
+names(my_result) <- c("state","year","population")
+                
+ggplot(data = my_result, aes(x=year,y=population)) + 
+        geom_line(aes(colour=state)) + ggtitle("") + 
+        xlab("Year") + ylab("Population (million)") + labs(colour="Brazil State")
+```
+
